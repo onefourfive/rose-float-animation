@@ -1,15 +1,14 @@
-#include <spi.h>
+#include "spi.h"
+#include <p18f46k22.h>
 
-#define DAC_B_ON	0X8000	//bit masks for setting config bits
-#define	DAC_A_ON	0X0000	//in 16-bit DAC string.
+#define DAC_B		0X8000	//bit masks for setting config bits
+#define	DAC_A		0X0000	//in 16-bit DAC string.
 #define DAC_B_OFF	0X9000
 #define DAC_A_OFF	0X1000
 
-#pragma code low_vector 0x18
 
-int useDAC(unsigned int, unsigned char);		//send 10-bits to DAC (voltage, chan)
-void offDAC(unsigned char);				//disable port function (for crossover)
-unsigned int askBrain(unsigned char);			//read in 10-bit position data, gains
+void commandOut(int, unsigned char);			//output command signal
+void getRefdata(void);		//read in 10-bit position data, gains
 
 
 /*	To be implemented: pins on the PIC should be dedicated to reading
@@ -19,6 +18,7 @@ unsigned int askBrain(unsigned char);			//read in 10-bit position data, gains
 	device_ID should somehow illustrate what PIC this code is running on.
 
 	***IN SPI SLAVE MODE, WE CAN USE CHIPSELECT PINS. EASY MODE***
+	***EXCEPT WHERE THE HELL DO WE GET A BIG-ASS MUX???***
 */
 
 
@@ -47,53 +47,66 @@ unsigned int askBrain(unsigned char);			//read in 10-bit position data, gains
 	The char 'config' should be set by using the #define statements
 	above: i.e.
 
-	dacOut(v_out, DAC_B & ON);
+	useDAC(v_out, DAC_B & ON);
 */
 
-void commandOut(int voltage, unsigned int config){
-
-	int dacdata = 0x0000;	//16 bit output string
-
-	if(oldvoltage >= voltage)	//what direction are we going in
-		CONFIG_ON = DAC_A_ON;	//going down, use DAC_A
-		CONFIG_OFF = DAC_B_OFF;	//turn off DAC_B
-	
-	else if(oldvoltage <= voltage)
-		CONFIG_ON = DAC_B;	//going up, use DAC_B
-		CONFIG_OFF = DAC_A_OFF;	//turn off DAC_A
-
-	else
-		voltage = 0x0000;
-		oldvoltage = oldvoltage;
-
-	dacdata = voltage & 0xFC00;	//ensure only 10 bit output
-
-	dacdata = config & dacdata;	//set config bits
-	dacdata = dacdata << 2;		//shift in voltage data
-
-
-	openSPI1(SPI_FOSC_16, MODE_00, SMP_END);
-	putsSPI1(dacdata);
-	while(busySPI1);
-	closeSPI1();
+void main(){
+	commandOut(1023, 15);
 }
 
+void commandOut(int voltage, unsigned char DACn){
 
-/*	askBrain opens the 2nd SPI channel, SPI2, in slave mode, and
+	int dacdata = 0x0000;				//16 bit output string
+	unsigned int DAC_on, DAC_off;				//config bit mask for DAC
+
+
+	//What direction are we going in?
+	if(voltage > 0){					
+		DAC_on = DAC_A;		//going up, use DAC_A
+	}
+	else if(voltage <= 0){
+		DAC_on = DAC_B;		//going down, use DAC_B
+		voltage *= -1;
+	}
+	voltage = voltage & 0x03FF;	//ensure only 10 bit output
+
+	dacdata = DAC_on;		//set config bits
+	voltage = voltage << 2;			
+	dacdata = dacdata | voltage;	//shift + or in voltage data
+	DAC_off = DAC_on ^ 0x9000;		//XOR turns off opposite channel
+	
+	PORTD = DACn;			//DACn determines pins on ~CS bus (to mux)
+	
+	OpenSPI(SPI_FOSC_16, MODE_00, SMPEND);
+	putsSPI(dacdata);
+	while(busySPI());
+	putsSPI1(DAC_off);
+		while(busySPI());
+	closeSPI();
+}
+
+/*	getRefdata opens the 2nd SPI channel, SPI2, in slave mode, and
 	sees if there is data available. If there is, it stores the
 	incoming data to the location specifed by the pointer it's given.
-*/
-void askBrain(unsigned char* channel){
-
-	int positionData = 0x0000;	//10 bit data
-	openSPI2(SLV_SSON, MODE_00, SMP_END);
 	
-	if(DataRdySPI2){
-		getsSPI2(channel, 0x16);	//takes a pointer. right?
+	Should this function be called via an interrupt?
+*/
+void getRefdata(){
+
+	int inData = 0x0000;	//10 bit data
+	int goWhere = 0x0000;	//where to put it
+	int* input = &inData;
+	openSPI2(SLV_SSON, MODE_00, SMPEND);
+	
+	if(DataRdySPI2()){
+		getsSPI2(input, 0x16);	//takes a pointer. right?
 	}
+	
+	goWhere = inData >> 12;
+	//position[goWhere] = inData;
 }
 
-	
+
 
 
 
