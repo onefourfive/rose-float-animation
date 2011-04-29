@@ -7,14 +7,10 @@ I dunno. Documentation on the libraries is on Dropbox.
 Derek 04/13/11
 Sean 4/23/11
 */
-
-
-#include <p18f46K22.h> 
 #include <stdio.h>
 #include <adc.h>
 #include <delays.h>
 #include <spi.h>
-#include <pconfig.h>
 
 
 #define DAC_B		0X8000	//bit masks for setting config bits
@@ -34,7 +30,7 @@ int ADC(int);
 void commandOut(int, unsigned char);			//output command signal
 void getRefdata(void);		//read in 10-bit position data, gains
 
-void main (void){
+void main (){
 	
 
 	//************PWM******************
