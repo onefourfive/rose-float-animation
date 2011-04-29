@@ -13,8 +13,3 @@ void init(){
 	}
 	
 
-void loop{
-while(1){
-	
-};
-}	
