@@ -25,7 +25,7 @@
 	
 	CHANGELOG:
 	v0.02 - Replaced all library function calls with register stuff.
-	
+	v0.03 - Changed direction logical "if" statements in commandOut.  
 	
 */
 #include <p18f46k22.h>
@@ -36,7 +36,7 @@
 #define DAC_A_OFF	0X1000
 
 void configSPI(void);				//set up SPI registers
-
+void sendtoDAC(unsigned int, unsigned char);
 void commandOut(int, unsigned char);//output command signal
 void getRefdata(void);				//read in 10-bit position data, gains
 
@@ -115,15 +115,19 @@ void commandOut(int voltage, unsigned char DACn){
 	unsigned int DAC_on, DAC_off;		//config bit mask for DAC
 
 	//What direction are we going in?
-	if(voltage > 0){					
+	if(voltage >= 0){					
 		DAC_on = DAC_A;		//going up, use DAC_A
 	}
-	else if(voltage <= 0){
+	else if(voltage < 0){
 		DAC_on = DAC_B;		//going down, use DAC_B
 		voltage *= -1;
 	}
 	voltage = voltage & 0x03FF;	//ensure only 10 bit output
-
+	
+	if(voltage > 1023){ //ensure PID values > 1023 send 0b11_1111_1111
+	voltage = 1023;
+	}
+	
 	dacdata = DAC_on;		//set config bits
 	voltage = voltage << 2;			
 	dacdata = dacdata | voltage;	//or in voltage data
