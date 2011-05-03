@@ -33,6 +33,10 @@
 
 #include <p18f46k22.h>
 
+void configInterrupts(void);
+void configTimer0(void);
+void chk_isr(void);
+
 #pragma code high_vector=0x08
 void isr(void){
 	_asm
@@ -52,7 +56,7 @@ void chk_isr(void){
 
 }
 #pragma code
-void configInterrupts(void){
+void configInterrupts(){
 	
 	RCONbits.IPEN = 0;		//disable priority levels
 	INTCONbits.GIE = 1;		//enable global interrupts
