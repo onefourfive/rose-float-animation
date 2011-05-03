@@ -1,0 +1,18 @@
+**********************************************************
+*	PROJECT MAESTRO NOTES
+*	======================================================
+*	This file should contain all the little things we need
+*	to know while programming for our specific device, the
+*	PIC18F46k22.
+*	Things to include:
+*	-What pins you're using for what
+*	-What modules you're using for what
+*	-Common Numbers (Clock/Instruction Cycle Clock, etc)
+***********************************************************
+
+Clock:
+
+16 MHz onboard oscillator => 4MHz Instruction Clock
+
+Pins:
+
