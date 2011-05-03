@@ -152,8 +152,6 @@ void getRefdata(){
 	
 }
 
-void main(){}
-
 
 
 
