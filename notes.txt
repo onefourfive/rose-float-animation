@@ -1,25 +1,18 @@
-#define DAC_B_ON	0X8000	//bit masks for setting config bits
-#define	DAC_A_ON	0X0000	//in 16-bit DAC string.
-#define DAC_B_OFF	0X9000
-#define DAC_A_OFF	0X1000
+**********************************************************
+*	PROJECT MAESTRO NOTES
+*	======================================================
+*	This file should contain all the little things we need
+*	to know while programming for our specific device, the
+*	PIC18F46k22.
+*	Things to include:
+*	-What pins you're using for what
+*	-What modules you're using for what
+*	-Common Numbers (Clock/Instruction Cycle Clock, etc)
+***********************************************************
 
+Clock:
 
-1000	0000	0000	0000
+16 MHz onboard oscillator => 4MHz Instruction Clock
 
-0000	0000	0000	0000
+Pins:
 
-1001	0000	0000	0000
-
-0001	0000	0000	0000
-
-when 	1000 -> 0001
-		0000 -> 1001
-	
-	X0R	1001
-	
-	XOR 0X9000
-	
-0000	0011	1111	1111
-
-
-AS;LJFKAOPSIBHLAKNSDFL;JSDFL;KJS
