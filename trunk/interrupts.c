@@ -32,30 +32,8 @@
 */
 
 #include <p18f46k22.h>
+#include "rosefloat.h"
 
-void configInterrupts(void);
-void configTimer0(void);
-void chk_isr(void);
-
-#pragma code high_vector=0x08
-void isr(void){
-	_asm
-		GOTO chk_isr
-	_endasm
-}
-
-#pragma interrupt chk_isr
-void chk_isr(void){
-
-	if(PIR3bits.SSP2IF)
-		getRefdata();
-	if(INTCONbits.TMR0IF)
-		sendtoDAC();
-	if(INTCONbits.INT0IF)
-		sendtoDAC();
-
-}
-#pragma code
 void configInterrupts(){
 	
 	RCONbits.IPEN = 0;		//disable priority levels
@@ -71,7 +49,7 @@ void configInterrupts(){
 	
 }
 
-void configTimer0(void)	{
+void configTimer0()	{
 
 	/*Config TMR0CON*/
 	
