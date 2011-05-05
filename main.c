@@ -10,6 +10,7 @@ Repeats continuously. No interrupts used.
 */
 
 #include <p18f46k22.h>
+#include "rosefloat.h"
 
 #pragma config 	FOSC = INTIO67		//internal oscillator
 #pragma config	BOREN = OFF			//no brownout functions
@@ -17,8 +18,35 @@ Repeats continuously. No interrupts used.
 #pragma config	PBADEN = ON			//on reset, PORTB = analog
 #pragma config 	MCLRE = EXTMCLR		//MCLR pin works
 
+
 //unsigned char i=0;
 int current_position,desired_position,PID_output;
+
+#pragma code high_vector=0x08
+
+void isr(void){
+	_asm
+		GOTO chk_isr
+	_endasm
+}
+
+#pragma interrupt chk_isr
+
+void chk_isr(void){
+
+	if(PIR3bits.SSP2IF)
+		getRefdata();
+	if(INTCONbits.TMR0IF)
+		sendtoDAC(0, 0);	//these two
+	if(INTCONbits.INT0IF)
+		sendtoDAC(0, 0);	//sendtoDAC calls
+		
+	//don't do anything.. on these interrupts, we'd like to start
+	//setting ALL outputs......
+
+}
+
+#pragma code
 
 void main (){
 	

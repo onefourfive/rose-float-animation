@@ -29,16 +29,14 @@
 	
 */
 #include <p18f46k22.h>
+#include "rosefloat.h"
 /*CONFIG CONSTANTS*/
 #define DAC_B		0X8000	//bit masks for setting config bits
 #define	DAC_A		0X0000	//in 16-bit DAC string.
 #define DAC_B_OFF	0X9000
 #define DAC_A_OFF	0X1000
 
-void configSPI(void);				//set up SPI registers
-void sendtoDAC(unsigned int, unsigned char);
-void commandOut(int, unsigned char);//output command signal
-void getRefdata(void);				//read in 10-bit position data, gains
+
 
 
 void configSPI(){

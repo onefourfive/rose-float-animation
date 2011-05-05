@@ -8,15 +8,15 @@ Derek 04/13/11
 Sean 4/23/11
 Derek 05/03/11 - Put the ADC functions here.
 */
-void Initialize_ADC(void); 
-int Get_ADC(int);
-int PID(void);
+
 
 
 int Kp,Ki,Kd,new_error,old_error,P_err,I_err,D_err;
 
 
 #include <p18f46k22.h>
+#include "rosefloat.h"
+
 
 int PID( void )
 {
