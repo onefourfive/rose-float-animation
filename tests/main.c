@@ -21,6 +21,8 @@ No libraries are used because the intended p18F46k22 does not support them.
 #pragma config	PBADEN = ON			//on reset, PORTB = analog
 #pragma config 	MCLRE = EXTMCLR		//MCLR pin works
 */
+
+#pragma config FOSC = INTOSCIO_EC
 #define DAC_B		0X8000	//bit masks for setting config bits
 #define	DAC_A		0X0000	//in 16-bit DAC string.
 #define DAC_B_OFF	0X9000
@@ -65,10 +67,10 @@ void main (){
 		PID_output = PID();
 		
 		commandOut(PID_output,0);
-		
+		//*if(;!=;)replace with -> ;;;;;;;;;;;;;; for joel
+
 		}
 		//while(new_frame==0);  //30Hz external clock
-	}
 }
 
 
@@ -79,7 +81,7 @@ void main (){
 int PID( void )
 {
 	old_error = new_error;
-	new_error = dp-cp;
+	new_error = desired_position-current_position;
 	P_err = new_error;
 	I_err += old_error;
 	D_err = new_error - old_error;
@@ -111,13 +113,18 @@ void commandOut(int voltage, unsigned char DACn){
 	unsigned int DAC_on, DAC_off;		//config bit mask for DAC
 
 	//What direction are we going in?
-	if(voltage > 0){					
+	if(voltage >= 0){					
 		DAC_on = DAC_A;		//going up, use DAC_A
 	}
-	else if(voltage <= 0){
+	else if(voltage < 0){
 		DAC_on = DAC_B;		//going down, use DAC_B
 		voltage *= -1;
 	}
+
+	if(voltage > 1023){
+	voltage=1023;
+	}
+	
 	voltage = voltage & 0x03FF;	//ensure only 10 bit output
 
 	dacdata = DAC_on;		//set config bits
@@ -136,12 +143,12 @@ void sendtoDAC(unsigned int data, unsigned char DACn){
 	high = (data >> 8);
 	low = (data << 8);
 	
-	PORTA = DACn;	//select w/ mux
-	SSP1BUF = high;
-	while(!SSP1STATbits.BF);
-	SSP1BUF = low;
-	while(!SSP1STATbits.BF);
-	PORTA = 0xF;
+//	PORTA = DACn;	//select w/ mux
+	SSPBUF = high;
+	while(!SSPSTATbits.BF);
+	SSPBUF = low;
+	while(!SSPSTATbits.BF);
+//	PORTA = 0xF;
 	
 }
 
@@ -153,28 +160,33 @@ void configSPI(){
 	*/
 	
 	//SSP1 : SPI Master Mode for DACs
-	SSP1STATbits.SMP = 0;		//Input data sampled at end of data output time
-	SSP1STATbits.CKE = 0;		//Transmit occurs on idle->active transition
+	SSPSTATbits.SMP = 0;		//Input data sampled at end of data output time
+	SSPSTATbits.CKE = 0;		//Transmit occurs on idle->active transition
 	
-	SSP1CON1bits.SSPEN = 1;	//Serial port enable
-	SSP1CON1bits.SSPM = 0b0001;  //SPI frequency = Fosc / 16
+	SSPCON1bits.SSPEN = 1;	//Serial port enable
+	//SSPCON1bits.SSPM = 0b0001;  //SPI frequency = Fosc / 16
 
-	//SSP2 : SPI Slave Mode (~SS Enabled) for receiving position data
-	SSP2STATbits.SMP = 0b0;
-	SSP2STATbits.CKE = 0b0;
-	SSP2CON1bits.SSPEN = 1;
-	SSP2CON1bits.SSPM = 0b0100;
+	SSPCON1bits.SSPM0	=	1;
+	SSPCON1bits.SSPM1	=	0;
+	SSPCON1bits.SSPM2	=	0;
+	SSPCON1bits.SSPM3	=	0;
+
+//	//SSP2 : SPI Slave Mode (~SS Enabled) for receiving position data
+//	SSP2STATbits.SMP = 0b0;
+//	SSP2STATbits.CKE = 0b0;
+//	SSP2CON1bits.SSPEN = 1;
+//	SSP2CON1bits.SSPM = 0b0100;
 
 	
 	/*PORT DIRECTIONS FOR SPI TO WORK*/
-	TRISCbits.RC3 = 0;	//SCK1
-	TRISCbits.RC4 = 1;	//SDI1
-	TRISCbits.RC5 = 0;	//SDO1
+	TRISCbits.TRISC7 = 0;	//SCK1
+	TRISBbits.TRISB0 = 1;	//SDI1
+	TRISBbits.TRISB1 = 0;	//SDO1
 	
-	TRISDbits.RD0 = 1;	//SCK2
-	TRISDbits.RD1 = 1;	//SDI2
-	TRISDbits.RD3 = 1;	//SS 2
-	TRISDbits.RD4 = 0;	//SD02
+//	TRISDbits.RD0 = 1;	//SCK2
+//	TRISDbits.RD1 = 1;	//SDI2
+//	TRISDbits.RD3 = 1;	//SS 2
+//	TRISDbits.RD4 = 0;	//SD02
 
 }
 

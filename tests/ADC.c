@@ -7,11 +7,8 @@ I dunno. Documentation on the libraries is on Dropbox.
 Derek 04/13/11
 Sean 4/23/11
 */
-#include <stdio.h>
-#include <adc.h>
-#include <delays.h>
-#include <spi.h>
-
+#include <p18f4550.h>
+#include "rosefloat.h"
 
 #define DAC_B		0X8000	//bit masks for setting config bits
 #define	DAC_A		0X0000	//in 16-bit DAC string.

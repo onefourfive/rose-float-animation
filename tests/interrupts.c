@@ -31,7 +31,10 @@
 	will go.
 */
 
-#include <p18f46k22.h>
+#include <p18f4550.h>
+#include "rosefloat.h"
+
+void chk_isr(void);
 
 #pragma code high_vector=0x08
 void isr(void){
@@ -41,14 +44,14 @@ void isr(void){
 }
 
 #pragma interrupt chk_isr
-void chk_isr(void){
+void chk_isr(){
 
-	if(PIR3bits.SSP2IF)
-		getRefdata();
+	//if(PIR3bits.SSP2IF)
+		//getRefdata();
 	if(INTCONbits.TMR0IF)
-		sendtoDAC();
+		sendtoDAC(0,0);
 	if(INTCONbits.INT0IF)
-		sendtoDAC();
+		sendtoDAC(0,0);
 
 }
 #pragma code
@@ -61,7 +64,7 @@ void configInterrupts(void){
 
 	
 	/*Peripheral Interrupt Enable Bits*/
-	PIE3bits.SSP2IE = 1;	//enable SPI ch 2 (slave)
+	//PIE3bits.SSP2IE = 1;	//enable SPI ch 2 (slave)
 	INTCONbits.TMR0IE = 1;	//enable TMR0 interrupt
 	INTCONbits.INT0IE = 1;	//enable ext. interrupt 0 (pin 33)
 	
@@ -73,7 +76,7 @@ void configTimer0(void)	{
 	
 	T0CONbits.TMR0ON = 0;		//according to docs, TMR0 defaults on
 	T0CONbits.PSA = 1;		//enable prescale
-	T0CONbits.T0PS = 0b001;	//prescale of 4
+	//T0CONbits.T0PS = 0b001;	//prescale of 4
 	T0CONbits.T0CS = 0;		//rely on instruction cycle clock
 	T0CONbits.T08BIT = 0;		//16-bit mode
 	

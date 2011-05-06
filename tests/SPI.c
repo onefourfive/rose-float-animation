@@ -28,7 +28,8 @@
 	v0.03 - Changed direction logical "if" statements in commandOut.  
 	
 */
-#include <p18f46k22.h>
+//#include <p18f46k22.h>
+#include <p18f4550.h>
 /*CONFIG CONSTANTS*/
 #define DAC_B		0X8000	//bit masks for setting config bits
 #define	DAC_A		0X0000	//in 16-bit DAC string.
