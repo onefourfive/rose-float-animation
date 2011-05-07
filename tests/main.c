@@ -23,12 +23,13 @@ No libraries are used because the intended p18F46k22 does not support them.
 */
 
 #pragma config FOSC = INTOSCIO_EC
+
 #define DAC_B		0X8000	//bit masks for setting config bits
 #define	DAC_A		0X0000	//in 16-bit DAC string.
 #define DAC_B_OFF	0X9000
 #define DAC_A_OFF	0X1000
 
-int Kp,Ki,Kd,new_error,old_error,P_err,I_err,D_err;
+int Kp,Ki,Kd,new_error=0,old_error=0,P_err,I_err,D_err;
 int current_position,desired_position;
 int PID_output;
 
@@ -36,7 +37,7 @@ int PID_output;
 
 void Initialize_ADC(void); //Set up ADC registers: ADCON0, ADCON1, ADCON2
 
-int Get_ADC(int);//Starts, finishes, and returns ADC
+int Get_ADC(unsigned int);//Starts, finishes, and returns ADC
 
 int PID(void);//
 
@@ -48,9 +49,13 @@ void getRefdata(void);				//read in 10-bit position data, gains
 
 
 void main (){
-	
+
+	int i;
+	int direction;
+	TRISD = 0;
 	Initialize_ADC();
-	configSPI();
+//	configSPI();
+
 
 	//************PWM******************
 	// One while(1) loop is 1 Frame
@@ -66,7 +71,37 @@ void main (){
 		
 		PID_output = PID();
 		
-		commandOut(PID_output,0);
+		if(PID_output >= 0){					
+			direction=0;		
+		}
+		else{
+			direction=1;		
+			PID_output *= -1;
+		}
+
+	if(PID_output > 1023){
+	PID_output=1023;
+	}
+
+	if (direction==0)
+		{PORTDbits.RD0=0;
+		PORTDbits.RD1=1;
+		}
+	else
+		{PORTDbits.RD0=1;
+		PORTDbits.RD1=0;
+		}
+
+		for(i=0;i<PID_output;i++)
+		{}
+		
+		PORTDbits.RD0=0;
+		PORTDbits.RD1=0;
+		for(i=0;i<(1023-PID_output);i++)
+		{}
+	
+		
+	//	commandOut(PID_output,0);
 		//*if(;!=;)replace with -> ;;;;;;;;;;;;;; for joel
 
 		}
@@ -89,22 +124,22 @@ int PID( void )
 	return (1*P_err + 1*I_err + 1*D_err); //Gains set to 1 for testing
 
 }
-int Get_ADC( int i )
+int Get_ADC( unsigned int i )
 {
 	//ADCON0 = 0x03; //Selects ADChannel "i" and turns on ADC
-	ADCON0 = (i << 4) + 3;
+	ADCON0 = (i << 2) + 3;
 	ADCON0bits.GO = 1; // Start conversion
 	while(ADCON0bits.DONE==1); // Wait for completion
 	ADCON0bits.ADON = 0;  // Disable A/D converter
-	return (((int)ADRESH << 8) + ADRESL); //ReadADC(); // Read result
+	return (((int)ADRESH << 8) | ADRESL); //ReadADC(); // Read result
 
 }
 
 void Initialize_ADC(void)	// configure A/D convertor
 {
 	ADCON0=0x03; 
-    ADCON1=0x1D; 
-    ADCON2=0x29; 
+    ADCON1=0x0D; 
+    ADCON2=0xA9; 
 }
 
 void commandOut(int voltage, unsigned char DACn){
