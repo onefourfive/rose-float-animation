@@ -14,6 +14,10 @@ Clock:
 
 16 MHz onboard oscillator => 4MHz Instruction Clock
 
+Modules:
+
+SSP1	=>	Talks to DACs
+SSP2	=>	Talks to Arduino
+
 Pins:
 
-Bob Roy Was HEre
