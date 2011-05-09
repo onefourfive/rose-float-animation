@@ -48,10 +48,10 @@ void chk_isr(){
 
 	//if(PIR3bits.SSP2IF)
 		//getRefdata();
-	if(INTCONbits.TMR0IF)
-		sendtoDAC(0,0);
-	if(INTCONbits.INT0IF)
-		sendtoDAC(0,0);
+//	if(INTCONbits.TMR0IF)
+//		sendtoDAC(0,0);
+//	if(INTCONbits.INT0IF)
+//		sendtoDAC(0,0);
 
 }
 #pragma code

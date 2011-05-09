@@ -12,7 +12,8 @@ No libraries are used because the intended p18F46k22 does not support them.
 */
 
 #include <p18f4550.h>
-
+#include "rosefloat.h"
+#include <pwm.h>
 /*configs for p18f46k22. ignore
 
 #pragma config 	FOSC = INTIO67		//internal oscillator
@@ -37,7 +38,7 @@ int PID_output;
 
 void Initialize_ADC(void); //Set up ADC registers: ADCON0, ADCON1, ADCON2
 
-int Get_ADC(unsigned int);//Starts, finishes, and returns ADC
+int Get_ADC(int);//Starts, finishes, and returns ADC
 
 int PID(void);//
 
@@ -53,6 +54,7 @@ void main (){
 	int i;
 	int direction;
 	TRISD = 0;
+	configTimer0();
 	Initialize_ADC();
 //	configSPI();
 
@@ -92,15 +94,13 @@ void main (){
 		PORTDbits.RD1=0;
 		}
 
-		for(i=0;i<PID_output;i++)
-		{}
-		
-		PORTDbits.RD0=0;
-		PORTDbits.RD1=0;
-		for(i=0;i<(1023-PID_output);i++)
-		{}
+	OpenPWM1(0xA0);
+	SetDCPWM1(PID_output);
 	
-		
+	
+		//while(INTCONbits.TMR0IF){}
+
+		resetTimer0();
 	//	commandOut(PID_output,0);
 		//*if(;!=;)replace with -> ;;;;;;;;;;;;;; for joel
 
@@ -118,13 +118,13 @@ int PID( void )
 	old_error = new_error;
 	new_error = desired_position-current_position;
 	P_err = new_error;
-	I_err += old_error;
+	I_err  = 0;
 	D_err = new_error - old_error;
 	
 	return (1*P_err + 1*I_err + 1*D_err); //Gains set to 1 for testing
 
 }
-int Get_ADC( unsigned int i )
+int Get_ADC( int i )
 {
 	//ADCON0 = 0x03; //Selects ADChannel "i" and turns on ADC
 	ADCON0 = (i << 2) + 3;
@@ -139,7 +139,7 @@ void Initialize_ADC(void)	// configure A/D convertor
 {
 	ADCON0=0x03; 
     ADCON1=0x0D; 
-    ADCON2=0xA9; 
+    ADCON2=0xA9;
 }
 
 void commandOut(int voltage, unsigned char DACn){
