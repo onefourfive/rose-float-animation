@@ -20,7 +20,7 @@ Repeats continuously. No interrupts used.
 
 
 //unsigned char i=0;
-int current_position,desired_position,PID_output;
+int PID_output;
 
 #pragma code high_vector=0x08
 
@@ -54,6 +54,7 @@ void main (){
 	configSPI();
 	configInterrupts();
 	configTimer0();
+	
 
 	//************PWM******************
 	// One while(1) loop is 1 Frame
