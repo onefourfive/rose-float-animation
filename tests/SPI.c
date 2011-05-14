@@ -28,8 +28,8 @@
 	v0.03 - Changed direction logical "if" statements in commandOut.  
 	
 */
-//#include <p18f46k22.h>
-#include <p18f4550.h>
+#include <p18f46k22.h>
+#include "rosefloat.h"
 /*CONFIG CONSTANTS*/
 #define DAC_B		0X8000	//bit masks for setting config bits
 #define	DAC_A		0X0000	//in 16-bit DAC string.
@@ -55,7 +55,7 @@ void configSPI(){
 	
 	SSP1CON1bits.SSPEN = 1;	//Serial port enable
 	SSP1CON1bits.SSPM = 0b0001;  //SPI frequency = Fosc / 16
-
+//current_position
 	//SSP2 : SPI Slave Mode (~SS Enabled) for receiving position data
 	SSP2STATbits.SMP = 0b0;
 	SSP2STATbits.CKE = 0b0;
@@ -152,8 +152,6 @@ void getRefdata(){
 	L = SSP2BUF;
 	
 }
-
-void main(){}
 
 
 
