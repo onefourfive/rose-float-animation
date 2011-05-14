@@ -36,7 +36,11 @@ void setup() {
   // initialize serial communications at 9600 bps:
   pinMode(slaveSelectPin, OUTPUT);
   Serial.begin(9600);
+  SPI.setBitOrder(LSBFIRST);
+  SPI.setClockDivider(SPI_CLOCK_DIV4);
+  SPI.setDataMode(SPI_MODE0);
   SPI.begin();
+  
 }
 
 void loop() {
@@ -46,7 +50,7 @@ void loop() {
   // map it to the range of the analog out:
   outputValue = map(sensor1Value, 0, 1023, 0, 255);  
   // change the analog out value:
-  analogWrite(analogOutPin, outputValue);      
+  Serial.println();     
      outToDAC();
 
   // print the results to the serial monitor:
@@ -61,10 +65,8 @@ void loop() {
   delay(10);                     
 }
 
-void outToDAC(){
+void outToDAC(byte high, byte low){
     byte high, low;
-    high = 0x07;
-    low = 0xFF;
     
     for( byte low = 0xFF; low<=0xFF; low+4){
     digitalWrite(slaveSelectPin,LOW);
