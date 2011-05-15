@@ -13,6 +13,8 @@ Derek 05/03/11 - Put the ADC functions here.
 
 int Kp,Ki,Kd,new_error,old_error,P_err,I_err,D_err;
 
+int desired_position, current_position;
+
 
 #include <p18f46k22.h>
 #include "rosefloat.h"
@@ -32,10 +34,10 @@ int PID()
 }
 int Get_ADC( int i )
 {
-	ADCON0 = 0x03; //Selects ADChannel "i" and turns on ADC
-	//ADCON0 = (i << 4) + 3;
-	ADCON0bits.GO = 1; // Start conversion
-	while(ADCON0bits.DONE==1); // Wait for completion
+	//Selects ADChannel "i" and turns on ADC
+	ADCON0 = (i << 2) + 3;
+//	ADCON0bits.GO = 1; // Start conversion
+	while(ADCON0bits.GO==1); // Wait for completion
 	ADCON0bits.ADON = 0;  // Disable A/D converter
 	return (((int)ADRESH << 8) + ADRESL); //ReadADC(); // Read result
 
@@ -43,9 +45,16 @@ int Get_ADC( int i )
 
 void Initialize_ADC(void)	// configure A/D convertor
 {
-	ADCON0=0x03; 
-    ADCON1=0x1D; 
-    ADCON2=0x29;
+	ADCON0bits.CHS = 0b0000;
+	ADCON0bits.ADON = 0b0;
+
+    ADCON1bits.PVCFG = 0b00;
+	ADCON1bits.NVCFG = 0b00;
+
+	ADCON2bits.ADFM = 1;	//RIGHT JUSTIFY
+	ADCON2bits.ACQT = 0b000;	//0Tad
+ 	ADCON2bits.ADCS = 0b101;	//Fosc/16
+	
 	/*Configure ANSEL pins*/
 	ANSELA = 0b00101111;
 	ANSELB = 0b00111110;
