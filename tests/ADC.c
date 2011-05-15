@@ -158,6 +158,8 @@ void commandOut(int voltage, unsigned char DACn){
 	
 	Should this function be called via an interrupt?
 */
+
+/*
 void getRefdata(){
 
 	int inData = 0x0000;	//10 bit data
@@ -172,7 +174,7 @@ void getRefdata(){
 	desired_position[i]= inData >> 12;
 	//position[goWhere] = inData;
 }
-
+*/
 
 
 

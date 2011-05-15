@@ -50,11 +50,12 @@ void configSPI(){
 	*/
 	
 	//SSP1 : SPI Master Mode for DACs
-	SSP1STATbits.SMP = 0;		//Input data sampled at end of data output time
+	SSP1STATbits.SMP = 1;		//Input data sampled at end of data output time
 	SSP1STATbits.CKE = 0;		//Transmit occurs on idle->active transition
 	
 	SSP1CON1bits.SSPEN = 1;	//Serial port enable
 	SSP1CON1bits.SSPM = 0b0001;  //SPI frequency = Fosc / 16
+	SSP1CON1bits.CKP = 0;
 //current_position
 	//SSP2 : SPI Slave Mode (~SS Enabled) for receiving position data
 	SSP2STATbits.SMP = 0b0;
@@ -100,12 +101,12 @@ void sendtoDAC(unsigned int data, unsigned char DACn){
 	high = (data >> 8);
 	low = (data << 8);
 	
-	PORTA = DACn;	//select w/ mux
+	//PORTA = DACn;	//select w/ mux
 	SSP1BUF = high;
 	while(!SSP1STATbits.BF);
 	SSP1BUF = low;
 	while(!SSP1STATbits.BF);
-	PORTA = 0xF;
+	//PORTA = 0xF;
 	
 }
 	
