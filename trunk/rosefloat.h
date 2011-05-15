@@ -20,7 +20,7 @@
 *
 * Note:        		None
 *******************************************************************/
-void Initialize_ADC(void);
+extern void Initialize_ADC(void);
 
 /********************************************************************
 * Function: Get_ADC      
@@ -77,7 +77,7 @@ int PID(void);
 * Note:        		None
 *******************************************************************/
 
-void configSPI(void);
+extern void configSPI(void);
 
 /********************************************************************
 * Function:   sendtoDAC     
@@ -95,7 +95,7 @@ void configSPI(void);
 * Note:        		None
 *******************************************************************/
 
-void sendtoDAC(unsigned int, unsigned char);
+extern void sendtoDAC(unsigned int, unsigned char);
 
 /********************************************************************
 * Function:   commandOut
@@ -114,7 +114,7 @@ void sendtoDAC(unsigned int, unsigned char);
 * Note:        		None
 *******************************************************************/
 
-void commandOut(int, unsigned char);
+extern void commandOut(int, unsigned char);
 
 /********************************************************************
 * Function:   getRefdata
@@ -133,7 +133,7 @@ void commandOut(int, unsigned char);
 * Note:        		Not done. Needs to save data somewhere
 *******************************************************************/
 
-void getRefdata(void);
+extern void getRefdata(void);
 
 /*	I	N	T	E	R	R	U	P	T		S	T	U	F	F	*/
 /*	D	E	R	E	K		W	A	S		H	E	R	E	.	*/
@@ -154,7 +154,7 @@ void getRefdata(void);
 * Note:        		None
 *******************************************************************/
 
-void configInterrupts(void);
+extern void configInterrupts(void);
 
 /********************************************************************
 * Function: configTimer0       
@@ -172,7 +172,7 @@ void configInterrupts(void);
 * Note:        		None
 *******************************************************************/
 
-void configTimer0(void);
+extern void configTimer0(void);
 
 /********************************************************************
 * Function: chk_isr      
@@ -191,6 +191,8 @@ void configTimer0(void);
 * Note:        		None
 *******************************************************************/
 
-void chk_isr(void);
+extern void chk_isr(void);
+
+
 
 #endif

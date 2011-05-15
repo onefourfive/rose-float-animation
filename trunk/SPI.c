@@ -31,10 +31,10 @@
 #include <p18f46k22.h>
 #include "rosefloat.h"
 /*CONFIG CONSTANTS*/
-#define DAC_B		0X8000	//bit masks for setting config bits
-#define	DAC_A		0X0000	//in 16-bit DAC string.
-#define DAC_B_OFF	0X9000
-#define DAC_A_OFF	0X1000
+#define DAC_B		0XB000	//bit masks for setting config bits
+#define	DAC_A		0X3000	//in 16-bit DAC string.
+#define DAC_B_OFF	0X8000
+#define DAC_A_OFF	0X0000
 
 
 
@@ -47,11 +47,12 @@ void configSPI(){
 	*/
 	
 	//SSP1 : SPI Master Mode for DACs
-	SSP1STATbits.SMP = 0;		//Input data sampled at end of data output time
+	SSP1STATbits.SMP = 1;		//Input data sampled at end of data output time
 	SSP1STATbits.CKE = 0;		//Transmit occurs on idle->active transition
 	
 	SSP1CON1bits.SSPEN = 1;	//Serial port enable
 	SSP1CON1bits.SSPM = 0b0001;  //SPI frequency = Fosc / 16
+	SSP1CON1bits.CKP = 1;
 
 	//SSP2 : SPI Slave Mode (~SS Enabled) for receiving position data
 	SSP2STATbits.SMP = 0b0;
@@ -69,6 +70,7 @@ void configSPI(){
 	TRISDbits.RD1 = 1;	//SDI2
 	TRISDbits.RD3 = 1;	//SS 2
 	TRISDbits.RD4 = 0;	//SD02
+
 
 }
 
@@ -93,17 +95,18 @@ void configSPI(){
 
 void sendtoDAC(unsigned int data, unsigned char DACn){
 	
-	unsigned char high, low;
-	high = (data >> 8);
-	low = (data << 8);
-	
-	PORTA = DACn;	//select w/ mux
-	SSP1BUF = high;
+	unsigned char dataL = (data & 0x00FF);
+	unsigned char dataH = (data >> 8);	
+
+//	PORTA = DACn;	//select w/ mux
+	PORTAbits.RA7 = 0;
+	SSP1BUF = dataH; //configbits <7:4>, 4 MSB <3:0>
 	while(!SSP1STATbits.BF);
-	SSP1BUF = low;
+	SSP1BUF = dataL; //6 LSB <7:2>, don't care <1:0>
 	while(!SSP1STATbits.BF);
-	PORTA = 0xF;
-	
+	PORTAbits.RA7 = 1;
+//	PORTA = 0xF;
+//	PORTA = 0xFF;
 }
 	
 
@@ -115,24 +118,26 @@ void commandOut(int voltage, unsigned char DACn){
 	//What direction are we going in?
 	if(voltage >= 0){					
 		DAC_on = DAC_A;		//going up, use DAC_A
+		DAC_off = DAC_B;
 	}
 	else if(voltage < 0){
 		DAC_on = DAC_B;		//going down, use DAC_B
+		DAC_off = DAC_A;
 		voltage *= -1;
 	}
+
 	voltage = voltage & 0x03FF;	//ensure only 10 bit output
 	
-	if(voltage > 1023){ //ensure PID values > 1023 send 0b11_1111_1111
-	voltage = 1023;
-	}
 	
 	dacdata = DAC_on;		//set config bits
 	voltage = voltage << 2;			
 	dacdata = dacdata | voltage;	//or in voltage data
-	DAC_off = DAC_on ^ 0x9000;		//XOR turns off opposite channel
+//	DAC_off = DAC_on ^ 0x9000;		//XOR turns off opposite channel
 	
+	
+	sendtoDAC(DAC_off, DACn);
+
 	sendtoDAC(dacdata, DACn);
-	
 	
 }
 
