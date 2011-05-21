@@ -9,7 +9,7 @@ Repeats continuously. No interrupts used.
 */
 
 #include <p18f46k22.h>
-#include "C:\Documents and Settings\Electronics\Desktop\rose-float-animation\tests\rosefloat.h"
+#include "rosefloat.h"
 
 #pragma config 	FOSC = INTIO67		//internal oscillator
 #pragma config	BOREN = OFF			//no brownout functions
@@ -37,9 +37,9 @@ void main (){
     while(1){	
 
 
-		desired_position = Get_ADC(1);
+		desired_position = Get_ADC(1);  // Pin 3
 				
-		current_position = Get_ADC(0);
+		current_position = Get_ADC(0);  // Pin 2
 		
 		PID_output = PID();
 
