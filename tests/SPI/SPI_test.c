@@ -46,7 +46,7 @@ void main (){
 		buf1=0x30; //configBits
 		buf1= buf1|(PW>>6);
 		buf2=0x00;
-		buf2=buf2|(PW&0x003F));
+		buf2=buf2|(PW&0x003F);
 
       PORTEbits.RE0 = 0;
 		//CHN A or B , 
