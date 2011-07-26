@@ -1,0 +1,12 @@
+/*
+Myles Esmele, Jul 25
+
+bugs worth mentioning: from what I can see, everything seems to work now except
+
+I couldn't come up with a way to write a leading zero for the valve number when WRITING to the SD card. (The read function always reads 6 characters so if the valve number is less than 10 which would result in 5 characters, the read order gets messed up).
+
+Also, when calling the SPI function within the write function, the data writing to the SD card gets messed up.
+
+Lastly, when using the SPI function after writing to the SD card, there's a huge delay in writing the next 10-b data (that's why I commented it out for now).
+
+*/
