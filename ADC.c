@@ -52,7 +52,7 @@ void Initialize_ADC(void)	// configure A/D convertor
 	ADCON1bits.NVCFG = 0b00;
 
 	ADCON2bits.ADFM = 1;	//RIGHT JUSTIFY
-	ADCON2bits.ACQT = 0b000;	//0Tad
+	ADCON2bits.ACQT = 0b011;	//16Tad  NEEDS More time to acq
  	ADCON2bits.ADCS = 0b101;	//Fosc/16
 	
 	/*Configure ANSEL pins*/
