@@ -71,6 +71,12 @@ void configSPI(){
 	TRISDbits.RD3 = 1;	//SS 2
 	TRISDbits.RD4 = 0;	//SD02
 
+   /*PORT DIRECTIONS FOR CHIP SELECT*/
+	TRISAbits.RA6 = 0;	//B0
+	TRISAbits.RA7 = 0;	//B1
+	TRISCbits.RC0 = 0;	//B2
+	TRISCbits.RC1 = 0;	//B3
+
 
 }
 
@@ -98,15 +104,32 @@ void sendtoDAC(unsigned int data, unsigned char DACn){
 	unsigned char dataL = (data & 0x00FF);
 	unsigned char dataH = (data >> 8);	
 
-//	PORTA = DACn;	//select w/ mux
-	PORTAbits.RA7 = 0;
+///////////////////////////???????????/////////////////// <- must correct ports
+if(DACn>7) //B3
+PORTAbits.RC1 = 1;
+else
+PORTAbits.RC1 = 0;
+
+if(DACn%8>=4) // B2
+PORTAbits.RC0 = 1;
+else
+PORTAbits.RC0 = 0;
+
+if(DACn%4>=2) //B1
+PORTAbits.RA7 = 1;
+else
+PORTAbits.RA7 = 0;
+
+if(DACn%2 == 1) //B0
+PORTAbits.RA6 = 1;
+else
+PORTAbits.RA6 = 0;
+
+
 	SSP1BUF = dataH; //configbits <7:4>, 4 MSB <3:0>
 	while(!SSP1STATbits.BF);
 	SSP1BUF = dataL; //6 LSB <7:2>, don't care <1:0>
 	while(!SSP1STATbits.BF);
-	PORTAbits.RA7 = 1;
-//	PORTA = 0xF;
-//	PORTA = 0xFF;
 }
 	
 
