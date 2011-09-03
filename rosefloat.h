@@ -23,7 +23,7 @@
 extern void Initialize_ADC(void);
 
 /********************************************************************
-* Function: Get_ADC      
+* Function: Current_Position     
 * 
 * PreCondition: 	None
 *
@@ -38,7 +38,7 @@ extern void Initialize_ADC(void);
 * Note:        		None
 *******************************************************************/
 
-int Get_ADC(int);
+int Current_Position(int);
 
 /********************************************************************
 * Function: PID       
@@ -56,7 +56,7 @@ int Get_ADC(int);
 * Note:        		None
 *******************************************************************/
 
-int PID(void);
+int PID(int,int);
 
 /*	S	P	I		P	R	O	T	O	T	Y	P	E	S*/
 /*	D	E	R	E	K		S	O	R	E	N	S	O	N*/
