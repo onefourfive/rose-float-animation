@@ -2,9 +2,10 @@
 PROJECT MAESTRO, ROSE FLOAT ANIM. COMPUTER
 MAIN PROGRAM LOOP
 
-BARE BONES, FOR TEST USE ONLY,
-Reads 1 ADC.
-Output SPI to 1 DAC.
+Sean Conant 3 September 2011
+
+Fix ADC ACQ and preparing for multiples valves
+
 Repeats continuously. No interrupts used.
 */
 
@@ -21,41 +22,66 @@ Repeats continuously. No interrupts used.
 
 void main (){
 	
-	extern int desired_position, current_position;
-	
-	int PID_output;
+   //Define ADC I/O
+   
+   int i=0;
+   
+	extern int desired_position;
 
 	Initialize_ADC();
 
+  //Define SPI I/O
+
 	configSPI();
 
+ //************* May need to initialize ADC ports....
+	//TRISAbits.RA0 = 1;
+  // TRISAbits.RA1 = 1;
 
-	TRISAbits.RA0 = 1;
-	TRISAbits.RA1 = 1;
-
-	TRISAbits.RA7 = 0;  //slave select
+   
+   
     while(1){	
 
-
-		desired_position = Get_ADC(1);  // Pin 3
-				
-		current_position = Get_ADC(0);  // Pin 2
-		
-		PID_output = PID();
-
-		commandOut(PID_output,0);
-	    
-//sendtoDAC(0xB7FF,0);
+      //SPI in
+   
+      for(i=0;i<16;i++)
+       { 
+         commandOut(PID(desired_position(i),Current_Position(i),i);
+       }
   
-/*
-    PORTAbits.RA7 = 0;
-
-		SSP1BUF = 0x1F;
-		while(!SSP1STATbits.BF);
-		SSP1BUF = 0x00;
-		while(!SSP1STATbits.BF);
-
-      PORTAbits.RA7 = 1;
-*/		
 		}
 }
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+//This will need to be done by SPI in
+///////////////////////
+
+int desired_position(int a)
+{
+	int j;
+	switch(a)
+	{
+	case 1: j=Get_ADC(1); break;
+	case 2: j=Get_ADC(3); break;
+//	case 3: j=Get_ADC(); break;
+//	case 4: j=Get_ADC(); break;
+//	case 5: j=Get_ADC(); break;
+//	case 6: j=Get_ADC(); break;
+//	case 7: j=Get_ADC(); break;
+//	case 8: j=Get_ADC(); break;
+//	case 9: j=Get_ADC(); break;
+//	case 10: j=Get_ADC(); break;
+//	case 11: j=Get_ADC(); break;
+//	case 12: j=Get_ADC(); break;
+//	case 13: j=Get_ADC(); break;
+//	case 14: j=Get_ADC(); break;
+//	case 15: j=Get_ADC(); break;
+//	case 16: j=Get_ADC(); break;
+	default: break;
+	}	
+	return j;
+}
+
+
