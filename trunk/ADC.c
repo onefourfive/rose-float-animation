@@ -20,7 +20,9 @@ int desired_position, current_position;
 #include "rosefloat.h"
 
 
-int PID()
+
+
+int PID(int old_error, int new_error)
 {
 
 	old_error = new_error;
@@ -32,10 +34,31 @@ int PID()
 	return (1*P_err + 0*I_err + 0*D_err); //Gains set to 1 for testing
 
 }
-int Get_ADC( int i )
+int Current_Position( int i )
 {
-	//Selects ADChannel "i" and turns on ADC
-	ADCON0 = (i << 2) + 3;
+  int k;
+	switch(i)
+	{
+	case 0: k=0; break;
+	case 1: k=1; break;
+	case 2: k=2; break;
+//	case 3: k=3; break;
+//	case 4: k=4; break;
+//	case 5: k=5; break;
+//	case 6: k=6; break;
+//	case 7: k=7; break;
+//	case 8: k=8; break;
+//	case 9: k=9; break;
+//	case 10: k=10; break;
+//	case 11: k=11; break;
+//	case 12: k=13; break;
+//	case 13: k=14; break;
+//	case 14: k=16; break;
+//	case 15: k=25; break;	
+	default: break;
+	}	
+	//Selects ADChannel "k" and turns on ADC
+	ADCON0 = (k << 2) + 3;
 //	ADCON0bits.GO = 1; // Start conversion
 	while(ADCON0bits.GO==1); // Wait for completion
 	ADCON0bits.ADON = 0;  // Disable A/D converter
